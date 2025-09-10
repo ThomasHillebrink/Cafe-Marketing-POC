@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Café Board Game – POC</title>
+    <meta
+      name="description"
+      content="Demo site for a minimal marketing system: newsletter signup, DM & player signups, and Discord notifications."
+    />
+    <meta property="og:title" content="Café Board Game – POC" />
+    <meta
+      property="og:description"
+      content="Minimal demo: newsletter signup + event flow."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:image"
+      content="https://placehold.co/1200x630/png?text=Cafe+Board+Game"
+    />
+    <meta name="color-scheme" content="light dark" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600..900&family=UnifrakturMaguntia&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ===== Steampunk × Eldritch theme ===== */
+      :root {
+        /* brass + aged parchment + eldritch green */
+        --bg: #0f1412; /* abyssal green-black */
+        --bg-2: #141a16; /* deeper layer */
+        --card: #161c18; /* panels */
+        --ink: #efe7d3; /* parchment ink */
+        --muted: #bdb39a; /* aged parchment */
+        --brass: #b87333; /* copper/brass */
+        --verdigris: #2e7a61; /* oxidized copper */
+        --eldritch: #1d574d; /* deep green */
+        --accent: #d9b26f; /* antique gold */
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        --maxw: 1040px;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font: 16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+          Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      }
+      body::before {
+        /* parchment + gears wash (replace url with your own asset for richer texture) */
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        background: radial-gradient(
+            1200px 600px at -10% -20%,
+            rgba(46, 122, 97, 0.18),
+            transparent 60%
+          ),
+          radial-gradient(
+            1000px 500px at 110% -10%,
+            rgba(184, 115, 51, 0.16),
+            transparent 60%
+          ),
+          url("assets/steampunk-parchment.jpg"); /* add this file to /assets for GitHub Pages */
+        background-size: cover, cover, cover;
+        background-position: center, center, center;
+        filter: contrast(1.02) saturate(0.9);
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .container {
+        width: min(100%, var(--maxw));
+        margin-inline: auto;
+        padding-inline: 20px;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        backdrop-filter: saturate(140%) blur(6px);
+        background: color-mix(in oklab, var(--bg) 82%, black 18%);
+        border-bottom: 1px solid
+          color-mix(in oklab, var(--brass) 40%, transparent);
+        z-index: 20;
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+      }
+
+      .brand {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        letter-spacing: 0.3px;
+        color: var(--accent);
+      }
+      .brand .logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--brass), var(--verdigris));
+        display: grid;
+        place-items: center;
+        box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.4);
+        font-family: "UnifrakturMaguntia", system-ui;
+        font-size: 20px;
+        color: #0b0e0d;
+      }
+      .brand .text {
+        font-family: "Cinzel", serif;
+        font-weight: 700;
+        font-size: 18px;
+      }
+
+      .nav a {
+        margin-left: 18px;
+        font-family: "Cinzel", serif;
+      }
+      .btn {
+        display: inline-block;
+        padding: 10px 16px;
+        border-radius: 12px;
+        background: linear-gradient(180deg, var(--accent), #c19a5b);
+        color: #120c06;
+        font-weight: 800;
+        border: 1px solid color-mix(in oklab, var(--brass) 55%, black 45%);
+        box-shadow: var(--shadow);
+      }
+      .btn:hover {
+        filter: brightness(1.06);
+        text-decoration: none;
+      }
+      .ghost {
+        background: transparent;
+        color: var(--ink);
+        border: 1px solid color-mix(in oklab, var(--ink) 25%, transparent 75%);
+      }
+
+      .hero {
+        padding: 64px 0 32px;
+        background: radial-gradient(
+            1200px 600px at 0% -10%,
+            rgba(46, 122, 97, 0.25),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 450px at 100% -10%,
+            rgba(184, 115, 51, 0.2),
+            transparent 60%
+          );
+        border-bottom: 1px solid
+          color-mix(in oklab, var(--brass) 30%, transparent);
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 28px;
+        align-items: center;
+      }
+      .hero h1 {
+        font: 800 clamp(28px, 4.2vw, 48px) / 1.05 "Cinzel", serif;
+        margin: 0 0 12px;
+        letter-spacing: 0.5px;
+      }
+      .hero p {
+        margin: 0 0 18px;
+        color: var(--muted);
+      }
+
+      .card {
+        background: linear-gradient(
+          180deg,
+          color-mix(in oklab, var(--card) 86%, #000 14%),
+          color-mix(in oklab, var(--card) 92%, #000 8%)
+        );
+        border: 1px solid color-mix(in oklab, var(--brass) 26%, transparent);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+      .card::before {
+        /* faint gear/occult wash */
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+            140px 90px at 90% 20%,
+            rgba(184, 115, 51, 0.14),
+            transparent 60%
+          ),
+          radial-gradient(
+            220px 140px at 10% 110%,
+            rgba(46, 122, 97, 0.12),
+            transparent 60%
+          );
+        pointer-events: none;
+      }
+
+      .section {
+        padding: 42px 0;
+      }
+      .grid {
+        display: grid;
+        gap: 18px;
+        align-items: stretch;
+      }
+      .grid.cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .grid.cols-2 {
+        grid-template-columns: 1.05fr 0.95fr;
+      }
+
+      @media (max-width: 900px) {
+        .hero-grid {
+          grid-template-columns: 1fr;
+        }
+        .grid.cols-3,
+        .grid.cols-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--verdigris);
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .event-card h3 {
+        margin: 6px 0 8px;
+        font-family: "Cinzel", serif;
+      }
+      .event-card p {
+        color: var(--muted);
+        margin: 0 0 10px;
+      }
+
+      .footer {
+        padding: 28px 0 44px;
+        color: var(--muted);
+        font-size: 14px;
+        border-top: 1px solid color-mix(in oklab, var(--brass) 20%, transparent);
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .center {
+        text-align: center;
+      }
+      img.resp {
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+        border: 1px solid color-mix(in oklab, var(--brass) 20%, transparent);
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      /* Perks card gets texture to visually balance the taller iframe card */
+      .perks-card {
+        min-height: 530px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .perks-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+            200px 160px at 20% 85%,
+            rgba(184, 115, 51, 0.18),
+            transparent 70%
+          ),
+          radial-gradient(
+            260px 200px at 110% -10%,
+            rgba(46, 122, 97, 0.18),
+            transparent 70%
+          );
+        opacity: 0.8;
+        pointer-events: none;
+        mix-blend-mode: soft-light;
+      }
+
+      /* Embed card holds the Brevo form and drives row height */
+      .embed-card {
+        min-height: 530px;
+        display: grid;
+        place-items: center;
+      }
+      .embed-card iframe {
+        width: 100%;
+        max-width: 560px;
+        height: 515px;
+        border: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container nav">
+        <div class="brand">
+          <div class="logo">BG</div>
+          <div class="text">Café Board Game — Demo</div>
+        </div>
+        <nav>
+          <a href="#events">Events</a>
+          <a href="#signup">Join the Guild</a>
+          <a href="#discord">Discord</a>
+          <a class="btn" href="#signup">Subscribe</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div>
+            <h1>Play more. Worry less.</h1>
+            <p>
+              A <strong>POC</strong> site showing the full flow: newsletter
+              opt‑in → DM/Player signups → Discord notifications → segmented
+              reminders. All on free tiers.
+            </p>
+            <div class="row">
+              <a class="btn" href="#signup">Join the Guild</a>
+              <a class="btn ghost" href="#events">See upcoming events</a>
+            </div>
+          </div>
+          <div class="card">
+            <img
+              class="resp"
+              src="public\assets\steampunk-parchment.jpg"
+              alt="People playing board games at a cozy café."
+            />
+          </div>
+        </div>
+      </section>
+
+      <section id="events" class="section">
+        <div class="container">
+          <div class="kicker">This week</div>
+          <h2 style="margin: 6px 0 18px; font-family: 'Cinzel', serif">
+            Upcoming events
+          </h2>
+          <div class="grid cols-3">
+            <article class="card event-card">
+              <div class="kicker">Tuesday · 18:00</div>
+              <h3>Open Game Night</h3>
+              <p>
+                Bring a friend or join a table. Staff will help with game picks.
+              </p>
+              <a
+                class="btn"
+                href="https://forms.gle/your-player-form"
+                target="_blank"
+                rel="noopener"
+                >Sign up as Player</a
+              >
+            </article>
+            <article class="card event-card">
+              <div class="kicker">Thursday · 18:30</div>
+              <h3>Learn‑to‑Play: Coup</h3>
+              <p>Social deduction in 15 minutes. Seats are limited.</p>
+              <a
+                class="btn"
+                href="https://forms.gle/your-player-form"
+                target="_blank"
+                rel="noopener"
+                >Reserve a seat</a
+              >
+            </article>
+            <article class="card event-card">
+              <div class="kicker">Saturday · 12:00</div>
+              <h3>CafeCon: GM Submissions</h3>
+              <p>
+                Run a one‑shot? Submit your table and system for the next cycle.
+              </p>
+              <a
+                class="btn"
+                href="https://forms.gle/your-dm-form"
+                target="_blank"
+                rel="noopener"
+                >Submit as DM</a
+              >
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="signup" class="section">
+        <div class="container">
+          <div class="grid cols-2">
+            <div class="card perks-card">
+              <div>
+                <div class="kicker">Guild perks</div>
+                <h2 style="margin: 6px 0 10px; font-family: 'Cinzel', serif">
+                  Subscribe to the newsletter
+                </h2>
+                <ul>
+                  <li>Weekly “What’s On” with events & new arrivals</li>
+                  <li>Learn‑to‑play slots & CaféCon cycles</li>
+                  <li>Occasional member perks</li>
+                </ul>
+                <p class="muted" style="margin-top: 8px">
+                  You can unsubscribe anytime.
+                </p>
+              </div>
+            </div>
+
+            <div class="card embed-card">
+              <!-- ▼▼▼ Brevo form (IFRAME) — paste your own iframe below ▼▼▼ -->
+              <iframe
+                src="https://f8b6048e.sibforms.com/serve/MUIFANF_9NtszO938rEKrHh6AjwZmqppuqEg42fAK2yTTRaAItKsOqkDigq-h0FvjaPAhHbTbqekRYdRYDCvWkiZm8RlYqbYfLHBOosbeBozx6V2tuDTtrHvlh1LMQMaHWjkIe-9XoUfJserbn5s__Vz_MmYu2M96F66LKgDD9QwDc4-wmHWeZunyi9loY3F9D_khlkbMw_Cdt_4"
+                allowfullscreen
+                scrolling="auto"
+              ></iframe>
+              <!-- ▲▲▲ Brevo form (IFRAME) ▲▲▲ -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="discord" class="section">
+        <div class="container grid cols-2">
+          <div class="card">
+            <div class="kicker">Community</div>
+            <h2 style="margin: 6px 0 10px; font-family: 'Cinzel', serif">
+              Join us on Discord
+            </h2>
+            <p class="muted">
+              For the demo, this links to your sandbox server’s channel where
+              sign‑up webhooks will appear.
+            </p>
+            <a
+              class="btn"
+              href="https://discord.gg/your-sandbox"
+              target="_blank"
+              rel="noopener"
+              >Open Discord</a
+            >
+          </div>
+          <div class="card">
+            <img
+              class="resp"
+              src="https://placehold.co/800x520/png?text=Join+the+Discord"
+              alt="Discord community screenshot placeholder."
+            />
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+          "
+        >
+          <div>© <span id="year"></span> Café Board Game — Demo</div>
+          <div class="muted">
+            This is a non‑commercial proof‑of‑concept for demonstration only.
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+      const utm = "?utm_source=demo-site&utm_medium=web&utm_campaign=cafe-poc";
+      document
+        .querySelectorAll('a[href^="https://forms.gle/"]')
+        .forEach((a) => {
+          try {
+            const u = new URL(a.href);
+            if (!u.search) a.href += utm;
+          } catch (e) {}
+        });
+    </script>
+  </body>
+</html>
